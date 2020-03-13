@@ -10,8 +10,6 @@ public class ArriveSteeringBehaviour : SeekSteeringBehaviour
 
     public override Vector3 calculateForce()
     {
-        checkMouseInput();
-
         Vector3 aDistanceVector = target - transform.parent.position;
 
         float aMag = aDistanceVector.magnitude;

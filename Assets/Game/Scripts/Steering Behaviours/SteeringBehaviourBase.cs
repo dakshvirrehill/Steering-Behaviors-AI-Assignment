@@ -11,18 +11,4 @@ public abstract class SteeringBehaviourBase : MonoBehaviour
 	public abstract Vector3 calculateForce();
 
 	[HideInInspector] public SteeringAgent steeringAgent;
-
-	protected void checkMouseInput()
-	{
-		if (Input.GetMouseButton(0) && useMouseInput)
-		{
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			RaycastHit hit;
-			if (Physics.Raycast(ray, out hit, 100))
-			{
-				target = hit.point;
-			}
-		}
-	}
-
 }
