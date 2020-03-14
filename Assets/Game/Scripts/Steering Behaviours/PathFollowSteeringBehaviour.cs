@@ -2,62 +2,55 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
 
 public class PathFollowSteeringBehaviour : ArriveSteeringBehaviour
 {
-    public Transform pathTarget;
-    public float waypointSeekDist = 0.5f;
-    public bool loop = false;
+    public float mWaypointSeekDist = 0.5f;
+    public bool mLoop = false;
 
-    public int currentWaypointIndex = 0;
+    int mCurrentWaypointIndex = 0;
 
-    private NavMeshPath path;
-
-    private void Start()
+    [HideInInspector] public NavMeshPath mPath = null;
+    public override void CalculateNewPath(Vector3 pPathTarget)
     {
-        path = new NavMeshPath();
-        NavMesh.CalculatePath(transform.position, pathTarget.position, NavMesh.AllAreas, path);
-        if(path != null && path.corners.Length > 0)
+        mPath = new NavMeshPath();
+        NavMesh.CalculatePath(transform.position, pPathTarget, NavMesh.AllAreas, mPath);
+        if(mPath != null && mPath.corners.Length > 0)
         {
-            target = path.corners[0];
+            mTarget = mPath.corners[0];
         }
     }
 
-    public override Vector3 calculateForce()
+    public override Vector3 CalculateForce()
     {
-        if(path == null || path.corners.Length == 0)
+        if (!(mPath != null && mPath.corners.Length > 0))
         {
-            return base.calculateForce();
+            return base.CalculateForce();
         }
-        if(!loop && currentWaypointIndex == path.corners.Length - 1)
+        if(!mLoop && mCurrentWaypointIndex == mPath.corners.Length - 1)
         {
-
+            mPath = null;
         }
-        else if((target - transform.position).magnitude <= waypointSeekDist)
+        else if((mTarget - transform.position).magnitude <= mWaypointSeekDist)
         {
-            if(currentWaypointIndex == path.corners.Length-1)
+            mCurrentWaypointIndex = (mCurrentWaypointIndex + 1) % mPath.corners.Length;
+            if (mCurrentWaypointIndex < mPath.corners.Length)
             {
-                currentWaypointIndex = 0;
-            }
-            else
-            {
-                currentWaypointIndex++;
-            }
-            if (currentWaypointIndex < path.corners.Length)
-            {
-                target = path.corners[currentWaypointIndex];
+                mTarget = mPath.corners[mCurrentWaypointIndex];
             }
         }
-        return base.calculateForce();
+        return base.CalculateForce();
     }
 
-    private void OnDrawGizmos()
+    protected override void OnDrawGizmos()
     {
-        if(path != null)
+        base.OnDrawGizmos();
+        if(mPath != null)
         {
-            for(int i = 1; i < path.corners.Length; i++)
+            for(int i = 1; i < mPath.corners.Length; i++)
             {
-                Debug.DrawLine(path.corners[i - 1], path.corners[i], Color.blue);
+                Debug.DrawLine(mPath.corners[i - 1], mPath.corners[i], Color.yellow);
             }
         }
     }

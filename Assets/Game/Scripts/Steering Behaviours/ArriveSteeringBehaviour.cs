@@ -4,42 +4,50 @@ using UnityEngine;
 
 public class ArriveSteeringBehaviour : SeekSteeringBehaviour
 {
-    [SerializeField] float mSlowDownDistance;
-    [SerializeField] float mDeceleration;
-    [SerializeField] float mStoppingDistance;
+    [SerializeField] float mSlowDownDistance = 5.0f;
+    [SerializeField] float mDeceleration = 2.5f;
+    [SerializeField] float mStoppingDistance = 0.5f;
+    [HideInInspector] public bool mPathComplete = true;
 
-    public override Vector3 calculateForce()
+    public override void CalculateNewPath(Vector3 pPathTarget)
     {
-        Vector3 aDistanceVector = target - transform.parent.position;
+        mPathComplete = false;
+        base.CalculateNewPath(pPathTarget);
+    }
+
+    public override Vector3 CalculateForce()
+    {
+        Vector3 aDistanceVector = mTarget - transform.parent.position;
 
         float aMag = aDistanceVector.magnitude;
 
         if(aMag > mSlowDownDistance)
         {
-            return base.calculateForce();
+            return base.CalculateForce();
         }
         else if(aMag < mStoppingDistance)
         {
-            return -steeringAgent.velocity;
+            mPathComplete = true;
+            return -mSteeringAgent.mVelocity;
         }
 
         float aSpeed = aMag / mDeceleration;
-        if(aSpeed > steeringAgent.maxSpeed)
+        if(aSpeed > mSteeringAgent.mMaxSpeed)
         {
-            aSpeed = steeringAgent.maxSpeed;
+            aSpeed = mSteeringAgent.mMaxSpeed;
         }
 
         aSpeed /= mSlowDownDistance;
 
         Vector3 aDesiredVelocity = aDistanceVector.normalized * aSpeed;
 
-        return aDesiredVelocity - steeringAgent.velocity;
+        return aDesiredVelocity - mSteeringAgent.mVelocity;
     }
 
 
-    private void OnDrawGizmos()
+    protected override void OnDrawGizmos()
     {
-        DebugExtension.DebugWireSphere(target);
+        base.OnDrawGizmos();
         DebugExtension.DebugCircle(transform.parent.position,Color.green, mSlowDownDistance);
     }
 

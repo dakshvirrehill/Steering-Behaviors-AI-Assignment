@@ -9,31 +9,43 @@ public class WanderSteeringBehaviour : SeekSteeringBehaviour
     public float mWanderJitter = 20.0f;
 
     Vector3 mWanderTarget;
+    bool mWander = false;
 
-    void Start()
+    public void SetWanderTarget()
     {
+        mWander = true;
         float aTheta = Random.value * Mathf.PI * 2.0f;
         mWanderTarget = new Vector3(mWanderRadius * Mathf.Cos(aTheta), 0.0f, mWanderRadius * Mathf.Sin(aTheta));
     }
 
-
-    public override Vector3 calculateForce()
+    public override void CalculateNewPath(Vector3 pPathTarget)
     {
-        float aJitterWRTTime = mWanderJitter * Time.deltaTime;
-        mWanderTarget = mWanderTarget + new Vector3(Random.Range(-1.0f, 1.0f) * aJitterWRTTime, 0.0f, Random.Range(-1.0f, 1.0f) * aJitterWRTTime);
-        mWanderTarget.Normalize();
-        mWanderTarget = mWanderTarget * mWanderRadius;
-        target = mWanderTarget + new Vector3(0, 0, mWanderDistance);
-        target = transform.rotation * target + transform.position;
-        return base.calculateForce();
+        mWander = false;
+        base.CalculateNewPath(pPathTarget);
     }
 
-    void OnDrawGizmos()
+
+    public override Vector3 CalculateForce()
     {
+        if(mWander)
+        {
+            float aJitterWRTTime = mWanderJitter * Time.deltaTime;
+            mWanderTarget = mWanderTarget + new Vector3(Random.Range(-1.0f, 1.0f) * aJitterWRTTime, 0.0f, Random.Range(-1.0f, 1.0f) * aJitterWRTTime);
+            mWanderTarget.Normalize();
+            mWanderTarget = mWanderTarget * mWanderRadius;
+            mTarget = mWanderTarget + new Vector3(0, 0, mWanderDistance);
+            mTarget = transform.rotation * mTarget + transform.position;
+        }
+        return base.CalculateForce();
+    }
+
+    protected override void OnDrawGizmos()
+    {
+        base.OnDrawGizmos();
         Vector3 aCircleCenter = transform.rotation * new Vector3(0.0f, 0.0f, mWanderDistance) + transform.position;
-        DebugExtension.DrawCircle(aCircleCenter,Vector3.up, Color.black, mWanderRadius);
-        Debug.DrawLine(transform.position, target, Color.red);
-        DebugExtension.DrawArrow(transform.position, transform.forward * mWanderDistance, Color.yellow);
+        DebugExtension.DrawCircle(aCircleCenter,Vector3.up, Color.green, mWanderRadius);
+        Debug.DrawLine(transform.position, mTarget, Color.yellow);
+        DebugExtension.DrawArrow(transform.position, transform.forward * mWanderDistance, Color.grey);
     }
 
 }

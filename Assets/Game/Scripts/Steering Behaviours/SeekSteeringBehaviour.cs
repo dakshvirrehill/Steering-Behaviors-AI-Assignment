@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class SeekSteeringBehaviour : SteeringBehaviourBase
 {
-	public override Vector3 calculateForce()
+	public override Vector3 CalculateForce()
 	{
-		Vector3 desiredVelocity = (target - transform.parent.position).normalized;
-		desiredVelocity = desiredVelocity * steeringAgent.maxSpeed;
-		return desiredVelocity - steeringAgent.velocity;
+		Vector3 aDesiredVelocity = (mTarget - transform.parent.position).normalized;
+		aDesiredVelocity = aDesiredVelocity * mSteeringAgent.mMaxSpeed;
+		return aDesiredVelocity - mSteeringAgent.mVelocity;
 	}
 
-	private void OnDrawGizmos()
+	protected virtual void OnDrawGizmos()
 	{
-		DebugExtension.DebugWireSphere(target);
+		DebugExtension.DebugWireSphere(mTarget, Color.red);
 	}
 }

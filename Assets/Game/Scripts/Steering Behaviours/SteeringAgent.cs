@@ -4,37 +4,28 @@ using UnityEngine;
 
 public class SteeringAgent : MonoBehaviour
 {
-	public enum SummingMethod
-	{
-		WeightedAverage,
-		Prioritized,
-		Dithered
-	};
-	public SummingMethod summingMethod = SummingMethod.WeightedAverage;
+	public bool mActive = false;
+	public float mMass = 1.0f;
+	public float mMaxSpeed = 1.0f;
+	public float mMaxForce = 10.0f;
 
-	public float mass = 1.0f;
-	public float maxSpeed = 1.0f;
-	public float maxForce = 10.0f;
+	public Vector3 mVelocity = Vector3.zero;
 
-	public Vector3 velocity = Vector3.zero;
-
-	private List<SteeringBehaviourBase> steeringBehaviours = new List<SteeringBehaviourBase>();
+	private List<SteeringBehaviourBase> mSteeringBehaviours = new List<SteeringBehaviourBase>();
 
     private Animator mAnimator;
 
-	public float angularDampeningTime = 5.0f;
-	public float deadZone = 10.0f;
+	public float mAngularDampeningTime = 5.0f;
+	public float mDeadZone = 10.0f;
 
-	private void Start()
+	void Start()
 	{
-		steeringBehaviours.AddRange(GetComponentsInChildren<SteeringBehaviourBase>());
-		foreach(SteeringBehaviourBase behaviour in steeringBehaviours)
+		mSteeringBehaviours.AddRange(GetComponentsInChildren<SteeringBehaviourBase>());
+		foreach(SteeringBehaviourBase aBehaviour in mSteeringBehaviours)
 		{
-			behaviour.steeringAgent = this;
+			aBehaviour.mSteeringAgent = this;
 		}
-
         mAnimator = GetComponent<Animator>();
-
 	}
 
     void OnAnimatorMove()
@@ -46,57 +37,52 @@ public class SteeringAgent : MonoBehaviour
         }
     }
 
-    private void Update()
+    void Update()
 	{
-		Vector3 steeringForce = calculateSteeringForce();
-		steeringForce.y = 0.0f;
+		if(!mActive)
+		{
+			return;
+		}
+		Vector3 aSteeringForce = calculateSteeringForce();
+		aSteeringForce.y = 0.0f;
 
-		Vector3 acceleration = steeringForce * (1.0f / mass);
-		velocity = velocity + (acceleration * Time.deltaTime);
-		velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
+		Vector3 aAcceleration = aSteeringForce * (1.0f / mMass);
+		mVelocity = mVelocity + (aAcceleration * Time.deltaTime);
+		mVelocity = Vector3.ClampMagnitude(mVelocity, mMaxSpeed);
 
-        float aSpeed = velocity.magnitude;
+        float aSpeed = mVelocity.magnitude;
 
         mAnimator.SetFloat("Speed", aSpeed);
 
 		if (aSpeed > 0.0f)
 		{
-			float angle = Vector3.Angle(transform.forward, velocity);
-			if (Mathf.Abs(angle) <= deadZone)
+			float aAngle = Vector3.Angle(transform.forward, mVelocity);
+			if (Mathf.Abs(aAngle) <= mDeadZone)
 			{
-				transform.LookAt(transform.position + velocity);
+				transform.LookAt(transform.position + mVelocity);
 			}
 			else
 			{
 				transform.rotation = Quaternion.Slerp(transform.rotation,
-													  Quaternion.LookRotation(velocity),
-													  Time.deltaTime * angularDampeningTime);
+													  Quaternion.LookRotation(mVelocity),
+													  Time.deltaTime * mAngularDampeningTime);
 			}
 		}
 	}
 
 	private Vector3 calculateSteeringForce()
 	{
-		Vector3 totalForce = Vector3.zero;
+		Vector3 aTotalForce = Vector3.zero;
 
-		foreach(SteeringBehaviourBase behaviour in steeringBehaviours)
+		foreach(SteeringBehaviourBase aBehaviour in mSteeringBehaviours)
 		{
-			if (behaviour.enabled)
+			if (aBehaviour.enabled)
 			{
-				switch(summingMethod)
-				{
-					case SummingMethod.WeightedAverage:
-						totalForce = totalForce + (behaviour.calculateForce() * behaviour.weight);
-						totalForce = Vector3.ClampMagnitude(totalForce, maxForce);
-						break;
-
-					case SummingMethod.Prioritized:
-						break;
-				}
-
+				aTotalForce += (aBehaviour.CalculateForce() * aBehaviour.mWeight);
+				aTotalForce = Vector3.ClampMagnitude(aTotalForce, mMaxForce);
 			}
 		}
 
-		return totalForce;
+		return aTotalForce;
 	}
 }

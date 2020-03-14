@@ -5,11 +5,17 @@ using UnityEngine;
 public class TerrainManager : Singleton<TerrainManager>
 {
     private List<Vector3> treePositions;
+    public List<Transform> mPathFollowPaths;
+    public Bounds mInnerBounds;
+    public Bounds mOuterBounds;
+    [SerializeField] BoxCollider mInnerCollider;
+    [SerializeField] BoxCollider mOuterCollider;
 
     void Start()
     {
         Vector3 myVec = Vector3.zero;
-
+        mInnerBounds = mInnerCollider.bounds;
+        mOuterBounds = mOuterCollider.bounds;
         TerrainData terrainData = Terrain.activeTerrain.terrainData;
         treePositions = new List<Vector3>(terrainData.treeInstances.Length);
         for (int i = 0; i < Terrain.activeTerrain.terrainData.treeInstances.Length; i++)
@@ -40,5 +46,27 @@ public class TerrainManager : Singleton<TerrainManager>
             }
         }
         return closestPosition;
+    }
+
+    public int GetClosestPathIndex(Vector3 pPosition)
+    {
+        int aClosestIx = -1;
+        float aClosestDistance = Mathf.Infinity;
+
+        for (int aI = 0; aI < mPathFollowPaths.Count; aI++)
+        {
+            float aDistance = (mPathFollowPaths[aI].position - pPosition).sqrMagnitude;
+            if (aDistance < aClosestDistance)
+            {
+                aClosestIx = aI;
+                aClosestDistance = aDistance;
+            }
+        }
+        return aClosestIx;
+    }
+
+    public bool IsTerrain(Collider pCollider)
+    {
+        return Terrain.activeTerrain.gameObject.GetInstanceID() == pCollider.gameObject.GetInstanceID();
     }
 }

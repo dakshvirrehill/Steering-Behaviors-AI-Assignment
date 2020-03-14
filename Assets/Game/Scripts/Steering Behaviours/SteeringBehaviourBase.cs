@@ -4,11 +4,13 @@ using UnityEngine;
 
 public abstract class SteeringBehaviourBase : MonoBehaviour
 {
-	public float weight = 1.0f;
-	public Vector3 target = Vector3.zero;
-	public bool useMouseInput = true;
+	public float mWeight = 1.0f;
+	protected Vector3 mTarget;
+	public abstract Vector3 CalculateForce();
+	[HideInInspector] public SteeringAgent mSteeringAgent;
 
-	public abstract Vector3 calculateForce();
-
-	[HideInInspector] public SteeringAgent steeringAgent;
+	public virtual void CalculateNewPath(Vector3 pPathTarget)
+	{
+		mTarget = pPathTarget;
+	}
 }
