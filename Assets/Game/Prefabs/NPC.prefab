@@ -431,7 +431,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6393697602373805705
 Transform:
   m_ObjectHideFlags: 0
@@ -458,11 +458,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38bbf7ca9e5a29548bb6ff7c51093b7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mWeight: 1
+  mWeight: 0
   mSteeringAgent: {fileID: 0}
   mSlowDownDistance: 5
   mDeceleration: 2.5
-  mStoppingDistance: 0.5
+  mStoppingDistance: 1
+  mPathComplete: 1
 --- !u!1 &1544823892681708819
 GameObject:
   m_ObjectHideFlags: 0
@@ -787,8 +788,8 @@ GameObject:
   - component: {fileID: 8385355509485653985}
   - component: {fileID: 2055625852}
   - component: {fileID: 2055625851}
-  - component: {fileID: 6271926996862081735}
   - component: {fileID: 1340951499929860265}
+  - component: {fileID: 6271926996862081735}
   m_Layer: 0
   m_Name: NPC
   m_TagString: Untagged
@@ -863,23 +864,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
---- !u!114 &6271926996862081735
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3210959270925537416}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2f61f06f9ed16c4ba5c0b8e9858f62a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mNPCMode: 0
-  mObstacleAvoider: {fileID: 3852865671880168662}
-  mSeekAndArrive: {fileID: 8325573305194869507}
-  mWander: {fileID: 8115915174736408234}
-  mNavMeshPather: {fileID: 2670549190994897836}
 --- !u!114 &1340951499929860265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -899,6 +883,23 @@ MonoBehaviour:
   mVelocity: {x: 0, y: 0, z: 0}
   mAngularDampeningTime: 5
   mDeadZone: 10
+--- !u!114 &6271926996862081735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3210959270925537416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2f61f06f9ed16c4ba5c0b8e9858f62a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mNPCMode: 2
+  mObstacleAvoider: {fileID: 3852865671880168662}
+  mSeekAndArrive: {fileID: 8325573305194869507}
+  mWander: {fileID: 8115915174736408234}
+  mNavMeshPather: {fileID: 2670549190994897836}
 --- !u!1 &3221807345618822381
 GameObject:
   m_ObjectHideFlags: 0
@@ -1294,7 +1295,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4939108544516253339
 Transform:
   m_ObjectHideFlags: 0
@@ -1321,10 +1322,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1601540993558474d9a67e1752a58906, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mWeight: 1
+  mWeight: 0
   mSteeringAgent: {fileID: 0}
-  mWanderDistance: 2
-  mWanderRadius: 1
+  mWanderDistance: 3
+  mWanderRadius: 2
   mWanderJitter: 20
 --- !u!1 &5427332924212083020
 GameObject:
@@ -1571,7 +1572,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &799447740975881112
 Transform:
   m_ObjectHideFlags: 0
@@ -1598,14 +1599,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2658cabf171d9bf40ad42e821da0384d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mWeight: 1
+  mWeight: 0
   mSteeringAgent: {fileID: 0}
   mSlowDownDistance: 5
   mDeceleration: 2.5
-  mStoppingDistance: 0.5
-  mWaypointSeekDist: 0.5
+  mStoppingDistance: 1
+  mPathComplete: 1
+  mWaypointSeekDist: 1
   mLoop: 0
-  mCurrentWaypointIndex: 0
 --- !u!1 &6099529345160384248
 GameObject:
   m_ObjectHideFlags: 0
@@ -2001,7 +2002,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &3966543098914131477
 Transform:
   m_ObjectHideFlags: 0
@@ -2028,7 +2029,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a91209928e780944eaf51e9c737aabd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mWeight: 1
+  mWeight: 0
   mSteeringAgent: {fileID: 0}
   mFeelers:
   - mDistance: 3

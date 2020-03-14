@@ -5,9 +5,9 @@ using UnityEngine;
 public class TerrainManager : Singleton<TerrainManager>
 {
     private List<Vector3> treePositions;
-    public List<Transform> mPathFollowPaths;
-    public Bounds mInnerBounds;
-    public Bounds mOuterBounds;
+    [HideInInspector]public Transform[] mPathFollowPaths;
+    [HideInInspector]public Bounds mInnerBounds;
+    [HideInInspector]public Bounds mOuterBounds;
     [SerializeField] BoxCollider mInnerCollider;
     [SerializeField] BoxCollider mOuterCollider;
 
@@ -29,6 +29,7 @@ public class TerrainManager : Singleton<TerrainManager>
 
             treePositions.Add(treePosition);
         }
+        mPathFollowPaths = transform.GetComponentsInChildren<Transform>();
     }
 
     public Vector3 findClosestTreePosition(Vector3 position)
@@ -53,7 +54,7 @@ public class TerrainManager : Singleton<TerrainManager>
         int aClosestIx = -1;
         float aClosestDistance = Mathf.Infinity;
 
-        for (int aI = 0; aI < mPathFollowPaths.Count; aI++)
+        for (int aI = 0; aI < mPathFollowPaths.Length; aI++)
         {
             float aDistance = (mPathFollowPaths[aI].position - pPosition).sqrMagnitude;
             if (aDistance < aClosestDistance)
@@ -63,6 +64,27 @@ public class TerrainManager : Singleton<TerrainManager>
             }
         }
         return aClosestIx;
+    }
+
+    public Vector3 GetRandomInnerBoundPoint()
+    {
+        Vector3 aRandomPos = new Vector3(
+            Random.Range(mInnerBounds.min.x, mInnerBounds.max.x),
+            0,
+            Random.Range(mInnerBounds.min.z, mInnerBounds.max.z)
+            );
+        aRandomPos.y = Terrain.activeTerrain.SampleHeight(aRandomPos) + Terrain.activeTerrain.gameObject.transform.position.y;
+        while ((findClosestTreePosition(aRandomPos) - aRandomPos).magnitude <= 2f)
+        {
+            aRandomPos = new Vector3(
+                Random.Range(mInnerBounds.min.x, mInnerBounds.max.x),
+                0,
+                Random.Range(mInnerBounds.min.z, mInnerBounds.max.z)
+                );
+            aRandomPos.y = Terrain.activeTerrain.SampleHeight(aRandomPos) + Terrain.activeTerrain.gameObject.transform.position.y;
+
+        }
+        return aRandomPos;
     }
 
     public bool IsTerrain(Collider pCollider)

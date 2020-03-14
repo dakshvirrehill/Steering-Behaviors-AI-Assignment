@@ -26,7 +26,7 @@ public class PathFollowSteeringBehaviour : ArriveSteeringBehaviour
     {
         if (!(mPath != null && mPath.corners.Length > 0))
         {
-            return base.CalculateForce();
+            return Vector3.zero;
         }
         if(!mLoop && mCurrentWaypointIndex == mPath.corners.Length - 1)
         {

@@ -62,6 +62,10 @@ public class NPCController : MonoBehaviour
         mSeekAndArrive.gameObject.SetActive(false);
         mWander.gameObject.SetActive(false);
         mNavMeshPather.gameObject.SetActive(false);
+        mObstacleAvoider.mWeight = 0.0f;
+        mSeekAndArrive.mWeight = 0.0f;
+        mWander.mWeight = 0.0f;
+        mNavMeshPather.mWeight = 0.0f;
         switch (mCurrentMode)
         {
             case NPCMode.PathFollowNavMesh:
@@ -87,6 +91,7 @@ public class NPCController : MonoBehaviour
     void ActivateNavMeshPather()
     {
         mNavMeshPather.gameObject.SetActive(true);
+        mNavMeshPather.mWeight = 1.5f;
         mCurrentPathIndex = TerrainManager.Instance.GetClosestPathIndex(transform.position);
         mNavMeshPather.CalculateNewPath(TerrainManager.Instance.mPathFollowPaths[mCurrentPathIndex].position);
     }
@@ -95,20 +100,25 @@ public class NPCController : MonoBehaviour
     {
         mSeekAndArrive.gameObject.SetActive(true);
         mObstacleAvoider.gameObject.SetActive(true);
+        mSeekAndArrive.mWeight = 1.5f;
+        mObstacleAvoider.mWeight = 2.5f;
         mCurrentPathIndex = TerrainManager.Instance.GetClosestPathIndex(transform.position);
         mSeekAndArrive.CalculateNewPath(TerrainManager.Instance.mPathFollowPaths[mCurrentPathIndex].position);
     }
 
     void ActivateWanderer()
     {
-
+        mWander.gameObject.SetActive(true);
+        mSeekAndArrive.gameObject.SetActive(true);
+        mObstacleAvoider.gameObject.SetActive(true);
+        SetSeekMode();
     }
 
     void NavMeshPatherUpdate()
     {
         if(mNavMeshPather.mPath == null)
         {
-            mCurrentPathIndex = (mCurrentPathIndex + 1) % TerrainManager.Instance.mPathFollowPaths.Count;
+            mCurrentPathIndex = (mCurrentPathIndex + 1) % TerrainManager.Instance.mPathFollowPaths.Length;
             mNavMeshPather.CalculateNewPath(TerrainManager.Instance.mPathFollowPaths[mCurrentPathIndex].position);
         }
     }
@@ -117,14 +127,39 @@ public class NPCController : MonoBehaviour
     {
         if(mSeekAndArrive.mPathComplete)
         {
-            mCurrentPathIndex = (mCurrentPathIndex + 1) % TerrainManager.Instance.mPathFollowPaths.Count;
+            mCurrentPathIndex = (mCurrentPathIndex + 1) % TerrainManager.Instance.mPathFollowPaths.Length;
             mSeekAndArrive.CalculateNewPath(TerrainManager.Instance.mPathFollowPaths[mCurrentPathIndex].position);
         }
     }
 
     void WandererUpdate()
     {
+        if(mSeekAndArrive.mWeight > 0.0f)
+        {
+            if (mSeekAndArrive.mPathComplete)
+            {
+                mWander.mWeight = 1.5f;
+                mSeekAndArrive.mWeight = 0.0f;
+                mWander.SetWanderTarget();
+            }
+        }
+        else
+        {
+            if(!TerrainManager.Instance.mOuterBounds.Contains(transform.position))
+            {
+                SetSeekMode();
+            }
+        }
+    }
 
+    void SetSeekMode()
+    {
+        mWander.mWeight = 0.5f;
+        mSeekAndArrive.mWeight = 1.5f;
+        mObstacleAvoider.mWeight = 2.5f;
+        Vector3 aRandomSeekPoint = TerrainManager.Instance.GetRandomInnerBoundPoint();
+        mSeekAndArrive.CalculateNewPath(aRandomSeekPoint);
+        mWander.CalculateNewPath(aRandomSeekPoint);
     }
 
 }
